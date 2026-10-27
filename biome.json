@@ -1,0 +1,6 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
+  "files": { "includes": ["**/*.ts", "**/*.json", "!**/.sandpiper"] },
+  "formatter": { "indentStyle": "space", "indentWidth": 2 },
+  "linter": { "rules": { "recommended": true } }
+}
