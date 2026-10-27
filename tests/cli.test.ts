@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
@@ -11,14 +11,14 @@ import {
 import { sandbox } from "./sandbox.ts";
 
 const cli = fileURLToPath(
-  new URL("../skills/journal/scripts/journal.ts", import.meta.url),
+  new URL("../skills/journal/scripts/journal", import.meta.url),
 );
 function run(
   box: ReturnType<typeof sandbox>,
   args: string[],
   env: NodeJS.ProcessEnv = {},
 ) {
-  return spawnSync(process.execPath, [cli, ...args], {
+  return spawnSync(cli, args, {
     cwd: box.cwd,
     env: { ...box.env, ...env },
     encoding: "utf8",
@@ -216,13 +216,9 @@ test("missing reads and help do not create state, and authors are never inferred
   )[0];
   assert.ok(entry);
   assert.equal(Object.hasOwn(entry, "author"), false);
-  const executable = spawnSync(cli, ["read"], {
-    cwd: box.cwd,
-    env: box.env,
-    encoding: "utf8",
-  });
-  assert.equal(executable.status, 0, executable.stderr);
-  assert.deepEqual(parseJournal(executable.stdout), [entry]);
+  const reread = run(box, ["read"]);
+  assert.equal(reread.status, 0, reread.stderr);
+  assert.deepEqual(parseJournal(reread.stdout), [entry]);
 });
 
 test("CLI refuses malformed journal files on reads and writes without changing bytes", (t) => {
@@ -254,7 +250,7 @@ test("CLI refuses malformed journal files on reads and writes without changing b
   }
 });
 
-test("independent source CLI processes convert v1 safely and publish unique entries concurrently", async (t) => {
+test("independent executable CLI processes convert v1 safely and publish unique entries concurrently", async (t) => {
   const box = sandbox(t);
   fs.mkdirSync(box.directory);
   const legacy =
@@ -277,8 +273,8 @@ test("independent source CLI processes convert v1 safely and publish unique entr
       (_, index) =>
         new Promise<void>((resolve, reject) => {
           const child = spawn(
-            process.execPath,
-            [cli, "write", "--author", String(index), `CLI ${index}`],
+            cli,
+            ["write", "--author", String(index), `CLI ${index}`],
             { cwd: box.cwd, env: box.env },
           );
           let stderr = "";
@@ -307,7 +303,7 @@ test("independent source CLI processes convert v1 safely and publish unique entr
     );
 });
 
-test("the source TypeScript CLI writes and reads in an unrelated project using Node alone", (t) => {
+test("the executable CLI writes and reads in an unrelated project using Node alone", (t) => {
   const box = sandbox(t);
   const write = run(box, [
     "write",
@@ -334,4 +330,39 @@ test("the source TypeScript CLI writes and reads in an unrelated project using N
     fs.statSync(join(box.directory, "journal.md")).mtimeMs,
     before.mtimeMs,
   );
+});
+
+test("the public journal file is an extensionless executable that prints help", (t) => {
+  const box = sandbox(t);
+  assert.notEqual(fs.statSync(cli).mode & 0o111, 0);
+  const help = run(box, ["--help"]);
+  assert.equal(help.status, 0, help.stderr);
+  assert.match(help.stdout, /^Usage: journal \[options\] \[command\]/u);
+});
+
+test("a copied checkout path with spaces runs directly with Node alone", (t) => {
+  const box = sandbox(t);
+  const checkout = join(box.root, "copied checkout");
+  const scripts = join(checkout, "skills", "journal", "scripts");
+  fs.cpSync(dirname(cli), scripts, { recursive: true });
+  fs.symlinkSync(
+    fileURLToPath(new URL("../node_modules", import.meta.url)),
+    join(checkout, "node_modules"),
+  );
+  fs.writeFileSync(
+    join(checkout, "package.json"),
+    fs.readFileSync(new URL("../package.json", import.meta.url)),
+  );
+  const copy = join(scripts, "journal");
+  assert.notEqual(fs.statSync(copy).mode & 0o111, 0);
+  const options = { cwd: box.cwd, env: box.env, encoding: "utf8" } as const;
+  const write = spawnSync(copy, ["write", "From a copied checkout."], options);
+  assert.equal(write.status, 0, write.stderr);
+  const read = spawnSync(copy, ["read"], options);
+  assert.equal(read.status, 0, read.stderr);
+  assert.equal(
+    parseJournal(read.stdout)[0]?.content,
+    "From a copied checkout.",
+  );
+  assert.equal(fs.existsSync(join(checkout, ".agent-journal")), false);
 });

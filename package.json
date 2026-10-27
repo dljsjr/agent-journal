@@ -7,7 +7,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "journal": "node skills/journal/scripts/journal.ts",
+    "journal": "skills/journal/scripts/journal",
     "test": "node --test tests/*.test.ts",
     "check": "tsc --noEmit && biome check ."
   },
