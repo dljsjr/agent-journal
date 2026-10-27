@@ -8,7 +8,7 @@ skills/journal/scripts/journal write 'Finished date filters. Details: JRN-3'
 skills/journal/scripts/journal read
 ```
 
-`journal` is an executable file with no extension. Run it directly, not as `node journal`. It needs Node 24+ on `PATH`. A two-line JavaScript launcher imports the typed `cli.ts`, which Node 24+ runs without a build step. Bun manages development dependencies but is not a runtime requirement. `mise.toml` preserves the Node LTS selection. Writers use `/usr/bin/lockf` on macOS or `/usr/bin/flock` on Linux.
+`journal` is an executable file with no extension. Run it directly, not as `node journal`. It needs Node 24+ on `PATH`. Node parses an extensionless entry point as JavaScript, so a small launcher imports the typed `cli.ts`. Node 24+ runs it without a build step. Bun manages development dependencies but is not a runtime requirement. `mise.toml` preserves the Node LTS selection. Writers use `/usr/bin/lockf` on macOS or `/usr/bin/flock` on Linux.
 
 Journal retains 200 entries, with at most 500 content code points each. Reads select the latest matching recorded day by default and return at most 20 entries. Author, date, and inclusive-since filters narrow the result.
 

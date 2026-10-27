@@ -8,7 +8,7 @@ The original version 1 implementation serialized JSON inside bullets. The lead a
 
 ## Current layout
 
-The public entry point is the executable `skills/journal/scripts/journal`. It has no extension and mode 0755. Run it directly, not as `node journal`. A two-line JavaScript launcher with a `#!/usr/bin/env node` shebang imports the typed `cli.ts`, because Node 24 strips types only from `.ts` filenames. Node 24+ runs both without a build step or Bun runtime. Commander 14.0.3 and Chrono 2.10.3 are the production dependencies. Root dependency installation keeps the skill scripts within the checkout. `mise.toml` remains unchanged.
+The public entry point is the executable `skills/journal/scripts/journal`. It has no extension and mode 0755. Run it directly, not as `node journal`. Node parses an extensionless entry point as JavaScript, so a small launcher with a `#!/usr/bin/env node` shebang imports the typed `cli.ts`. Node 24+ runs both without a build step or Bun runtime. Commander 14.0.3 and Chrono 2.10.3 are the production dependencies. Root dependency installation keeps the skill scripts within the checkout. `mise.toml` remains unchanged.
 
 The [usage guide](docs/usage.md) covers invocation, dependency setup, filters, attribution, and directory precedence. The [format reference](docs/format.md) defines version 2 grammar and escapes, version 1 compatibility, full-file parse refusal, and descriptor locking.
 

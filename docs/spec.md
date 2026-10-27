@@ -18,7 +18,7 @@ Reinforced guidance, project-local YAAMS, session-history search, and Stint rema
 
 The implementation uses Node-compatible TypeScript. Bun is preferred for development and package management, but the distributed tool must not require Bun APIs or a Bun shebang.
 
-The distribution goal is an executable extensionless `journal` file under the skill's `scripts/` directory, without a build step. Node 24 strips types only from files with a `.ts` name, so `journal` is a two-line JavaScript launcher with a `#!/usr/bin/env node` shebang. It imports the typed `cli.ts` source beside it. Commander and Chrono are ordinary JavaScript dependencies. No native npm addon, handwritten FFI binding, or database is selected.
+The distribution goal is an executable extensionless `journal` file under the skill's `scripts/` directory, without a build step. Node parses an extensionless entry point as JavaScript, so `journal` is a small launcher with a `#!/usr/bin/env node` shebang. It imports the typed `cli.ts` source beside it. Commander and Chrono are ordinary JavaScript dependencies. No native npm addon, handwritten FFI binding, or database is selected.
 
 Node 24+ is the approved baseline. The user created the standalone repository with `mise.toml` selecting `node = "lts"`, currently Node 24.22.1. A source `.ts` script ran successfully under that Node version during feasibility tests. The [usage guide](usage.md) defines the checkout-based dependency layout. Do not assume that publishing to npm, adding a release pipeline, or supporting every installation layout is part of the MVP.
 

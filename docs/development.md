@@ -25,7 +25,7 @@ The lock tests require macOS or Linux with the selected utility. Linux command s
 | `selection.ts` | Pure author, day-window, limit, and omission selection |
 | `store.ts` | Read-only loading and locked, bounded, atomic publication |
 
-The launcher has no extension because agents run it as a command. Node strips TypeScript types only from files with a `.ts` name, so the launcher is plain JavaScript and the typed code stays in `cli.ts`. Keep the launcher at two lines and its mode at 0755. TypeScript checks `cli.ts` and the modules it imports.
+The launcher has no extension because agents run it as a command. Node parses an extensionless entry point as JavaScript, so the launcher is plain JavaScript and the typed code stays in `cli.ts`. The launcher only starts the CLI by importing `cli.ts`. Put behavior in `cli.ts`. Keep the launcher mode at 0755. TypeScript checks `cli.ts` and the modules it imports.
 
 The data flow is arguments to typed selection or entry content, then journal storage, then output. Storage owns the lock descriptor and temporary file. The format parser refuses incomplete or unknown data before retention can discard old entries. No module detects a harness, infers identity, or imports another project.
 
