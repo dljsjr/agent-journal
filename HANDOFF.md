@@ -2,7 +2,7 @@
 
 Updated: 2026-10-27.
 
-The standalone CLI and skill implement the [approved v1 contract](docs/spec.md). The implementation awaits final lead review under local Trail task `JRN-1`. The user delegated final task completion to the lead. The developer/reviewer pair does not finalize that top-level task.
+The standalone CLI and skill implement the [approved v1 contract](docs/spec.md). The lead independently approved the implementation and completed local Trail task `JRN-1` as COMPLETE/DONE under delegated user sign-off.
 
 ## Current layout
 
@@ -45,7 +45,7 @@ Local Trail project `JRN` owns the work. Subtask descriptions preserve bounded r
 | `JRN-4` | Atomic descriptor-locked storage | `pqxrvvqv` |
 | `JRN-5` | Source CLI, skill, and usage documentation | `mnmlvrmx` |
 
-The adversarial reviewer approved all four slices and the complete implementation without actionable findings or unresolved blockers. Task `JRN-1` awaits lead review. The pair prioritized readable cohesive modules alongside behavioral correctness.
+The adversarial reviewer approved all four slices and the complete implementation without actionable findings or unresolved blockers. The lead independently approved `ztzlkxry` and completed `JRN-1`. The pair prioritized readable cohesive modules alongside behavioral correctness.
 
 ## Scope boundaries
 
