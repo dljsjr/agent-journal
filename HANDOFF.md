@@ -4,7 +4,7 @@ Updated: 2026-10-27.
 
 The standalone CLI and skill implement the [approved behavior](docs/spec.md) with readable Markdown entries in format version 2. The [actual generated sample](docs/sample-journal.md) shows attributed and anonymous ordinary prose from the Node CLI.
 
-The original version 1 implementation serialized JSON inside bullets. The lead approved that implementation and completed `JRN-1` as COMPLETE/DONE. User-reported task `JRN-6` tracks the correction to a small metadata prefix followed by prose. `JRN-1` remains complete.
+The original version 1 implementation serialized JSON inside bullets. The lead approved that implementation and completed `JRN-1` as COMPLETE/DONE. The lead also independently approved the readable Markdown correction at `mzntqzqk` and completed user-reported `JRN-6` and subtasks `JRN-7`, `JRN-8`, and `JRN-9` as COMPLETE/DONE.
 
 ## Current layout
 
@@ -36,6 +36,8 @@ Tests cover readable stored/displayed prose, both format readers, Unicode and de
 
 Actual macOS tests exercise the persistent descriptor lock after the utility exits, lock release, a bounded acquisition timeout, concurrent publication, and the retention ceiling. Narrow native-API failure injection covers missing utilities and rename failure. The reviewer also tested partial temporary writes, slow replacement, and simultaneous reads.
 
+The lead independently ran a frozen dependency installation, strict checks, and all 39 tests on `mzntqzqk`. Another 1,000 UTF-8 codec cases passed. Actual source CLI probes confirmed nonmutating version 1 display, safe version 2 conversion, exact retained values, adversarial author delimiters, and literal quoted/Markdown prose. Corrupt-file probes preserved bytes and modification times. The lead inspected the actual generated sample and approved its readability.
+
 Linux locking support uses `/usr/bin/flock`, but this implementation session did not execute Linux tests. No authorized local Linux runtime was available. Do not report Linux execution as verified. Guarantees cover cooperating writers on local filesystems, not network filesystems, manual edits, or power-loss durability.
 
 ## Review record
@@ -51,7 +53,9 @@ Local Trail project `JRN` owns the work. Subtask descriptions preserve bounded r
 
 The original adversarial reviewer approved all four version 1 slices and the complete implementation. The lead independently approved `ztzlkxry` and completed `JRN-1`.
 
-The readable Markdown correction uses the same continuous developer/reviewer workflow. Bounded evidence lives in the descriptions for `JRN-7` (codec, `vuuxoxvs`), `JRN-8` (safe transition, `yxvrrvry`), and `JRN-9` (grammar and generated sample). The reviewer independently approved the codec and transition with no actionable findings. The pair reviewed actual file and CLI output, not only parsed values. Only `format.ts` changes production behavior. Dates, selection, storage, locking, and CLI arguments remain unchanged.
+The readable Markdown correction used the same continuous developer/reviewer workflow. Bounded evidence lives in the descriptions for `JRN-7` (codec, `vuuxoxvs`), `JRN-8` (safe transition, `yxvrrvry`), and `JRN-9` (grammar and generated sample, `mzntqzqk`). The reviewer independently approved each slice and the complete range `lztrrtxw..mzntqzqk` with no actionable findings. The pair reviewed actual file and CLI output, not only parsed values. The lead independently approved `mzntqzqk` with no actionable findings and completed all four correction tasks under delegated user sign-off.
+
+Only `format.ts` changes production behavior. Dates, selection, storage, locking, and CLI arguments remain unchanged.
 
 ## Scope boundaries
 
