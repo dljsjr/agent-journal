@@ -10,9 +10,11 @@ skills/journal/scripts/journal read
 
 `journal` is an executable file with no extension. Run it directly, not as `node journal`. It needs Node 24+ on `PATH`. Node parses an extensionless entry point as JavaScript, so a small launcher imports the typed `cli.ts`. Node 24+ runs it without a build step. Bun manages development dependencies but is not a runtime requirement. `mise.toml` preserves the Node LTS selection. Writers use `/usr/bin/lockf` on macOS or `/usr/bin/flock` on Linux.
 
+To use the skill in Pi, run `pi install /absolute/path/to/agent-journal` after the dependency install. See [the install steps](docs/usage.md#install-as-a-pi-package).
+
 Journal retains 200 entries, with at most 500 content code points each. Reads select the latest matching recorded day by default and return at most 20 entries. Author, date, and inclusive-since filters narrow the result.
 
-- [Usage and dependency setup](docs/usage.md)
+- [Usage, dependency setup, and Pi package install](docs/usage.md)
 - [Journal skill](skills/journal/SKILL.md)
 - [Approved behavior](docs/spec.md), [file format](docs/format.md), and [actual generated sample](docs/sample-journal.md)
 - [Development](docs/development.md)

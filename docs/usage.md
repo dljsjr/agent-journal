@@ -28,6 +28,17 @@ Run `journal` as a command. Do not put `node` before it. Its `#!/usr/bin/env nod
 
 Keep the checkout and its root `node_modules` directory together. There is no build step. Point your harness's skill discovery at `skills/journal`. Copying `SKILL.md` alone does not install the script or its dependencies. Do not put the TypeScript source under `node_modules`. Node does not strip types there.
 
+## Install as a Pi package
+
+The root `package.json` declares `skills/journal` as the package's only Pi resource. Install dependencies in the checkout first. Pi does not install dependencies for a local path:
+
+```sh
+bun install --frozen-lockfile
+pi install /absolute/path/to/agent-journal
+```
+
+Pi loads the skill from the checkout without copying it. Keep the checkout in place. The package has no extension code. The package is private and is not published to npm. Installing from a Git source is not verified. Node 24 or later must be on `PATH`.
+
 For a shorter command in fish, define a function with the absolute checkout path:
 
 ```fish

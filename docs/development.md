@@ -10,6 +10,8 @@ bun run test
 
 `check` runs strict TypeScript checking and Biome formatting and lint checks. `test` invokes Node's test runner on the source TypeScript. CLI tests spawn the bare `journal` executable, so they also exercise the shebang and the execute bit. It refuses Bun or a Node version below 24. There is no compilation step. Use `node --test tests/format.test.ts` to run one file.
 
+`tests/package.test.ts` checks that `package.json` still declares `skills/journal` as the only Pi resource.
+
 The suite creates temporary projects with isolated HOME, XDG, temporary, and journal directories. CLI children receive a small explicit environment. Store tests inject failures only at native file and subprocess boundaries. Concurrency tests use independent Node processes and the real platform lock utility. One lock timeout test takes 10 seconds.
 
 The lock tests require macOS or Linux with the selected utility. Linux command support exists, but this implementation session did not execute Linux tests. See [HANDOFF.md](../HANDOFF.md) for verified platforms and remaining limits.

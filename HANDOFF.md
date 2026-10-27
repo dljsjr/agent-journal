@@ -30,7 +30,7 @@ bun run test
 
 `check` runs strict TypeScript and Biome with zero warnings. `test` executes the TypeScript source through Node's test runner. Test helpers reject Bun and Node versions below 24.
 
-The corrected suite passed 39 tests under Node 24.22.1 on macOS. The executable entry point (`JRN-16`) added two tests, for 41 in total. CLI tests now spawn the bare executable, and a copied checkout path with spaces runs with Node alone. The baseline version 1 suite passed 31 tests before edits. Earlier independent copied-source probes installed only Commander and Chrono, then ran the CLI without Bun on PATH. Current CLI tests also use Node alone with isolated HOME and XDG paths.
+The corrected suite passed 39 tests under Node 24.22.1 on macOS. The executable entry point (`JRN-16`) added two tests, for 41 in total. The Pi package manifest (`JRN-17`) added one test, for 42 in total. CLI tests now spawn the bare executable, and a copied checkout path with spaces runs with Node alone. The baseline version 1 suite passed 31 tests before edits. Earlier independent copied-source probes installed only Commander and Chrono, then ran the CLI without Bun on PATH. Current CLI tests also use Node alone with isolated HOME and XDG paths.
 
 Tests cover readable stored/displayed prose, both format readers, Unicode and delimiter roundtrips, malformed-file and failed-replacement preservation, retention, and author/date/limit selection. They also cover fixed-reference dates, directory precedence, actual CLI execution, and concurrent independent writers. Transition tests preserve rich legacy values, reject malformed data beyond retention, and race sixteen CLI writers against a 240-entry version 1 journal. CLI subprocesses use temporary HOME, XDG, project, and temporary directories with an explicit environment.
 
@@ -51,6 +51,7 @@ Local Trail project `JRN` owns the work. Task and subtask descriptions preserve 
 | `JRN-4` | Atomic descriptor-locked storage | `pqxrvvqv` |
 | `JRN-5` | Source CLI, skill, and usage documentation | `mnmlvrmx` |
 | `JRN-16` | Extensionless executable launcher, tests, and documentation | `tzyostsl`, `uktxtmlu`, `xzlvmvmm` |
+| `JRN-17` | Pi package manifest, contract test, and local install guide | `vnzyuswx`, `qyvkvprs` |
 
 The original adversarial reviewer approved all four version 1 slices and the complete implementation. The lead independently approved `ztzlkxry` and completed `JRN-1`.
 
