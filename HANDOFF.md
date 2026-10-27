@@ -26,6 +26,8 @@ bun run test
 
 `check` runs strict TypeScript and Biome with zero warnings. `test` executes the TypeScript source through Node's test runner. Test helpers reject Bun and Node versions below 24.
 
+The final suite passed 31 tests under Node 24.22.1 on macOS. Independent copied-source probes installed only Commander and Chrono, then ran the CLI without Bun on PATH.
+
 Tests cover full serialization roundtrips, malformed-file and failed-replacement preservation, retention, author/date/limit selection, fixed-reference date handling, directory precedence, actual CLI execution, and concurrent independent writers. CLI subprocesses use temporary HOME, XDG, project, and temporary directories with an explicit environment.
 
 Actual macOS tests exercise the persistent descriptor lock after the utility exits, lock release, a bounded acquisition timeout, concurrent publication, and the retention ceiling. Narrow native-API failure injection covers missing utilities and rename failure. The reviewer also tested partial temporary writes, slow replacement, and simultaneous reads.
@@ -41,9 +43,9 @@ Local Trail project `JRN` owns the work. Subtask descriptions preserve bounded r
 | `JRN-2` | Versioned Markdown codec and Node development setup | `nosooour` |
 | `JRN-3` | Local dates and pure read selection | `sklqmuyp` |
 | `JRN-4` | Atomic descriptor-locked storage | `pqxrvvqv` |
-| `JRN-5` | Source CLI, skill, and usage documentation | Recorded in the task after review |
+| `JRN-5` | Source CLI, skill, and usage documentation | `mnmlvrmx` |
 
-The reviewer approved the first three slices without actionable findings. Final CLI/skill review and lead sign-off are recorded through Trail. The pair prioritized readable cohesive modules alongside behavioral correctness.
+The adversarial reviewer approved all four slices and the complete implementation without actionable findings or unresolved blockers. Task `JRN-1` awaits lead review. The pair prioritized readable cohesive modules alongside behavioral correctness.
 
 ## Scope boundaries
 
