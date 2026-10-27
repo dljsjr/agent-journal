@@ -8,7 +8,7 @@ The original version 1 implementation serialized JSON inside bullets. The lead a
 
 ## Current layout
 
-The source entry point is `skills/journal/scripts/journal.ts`. Node 24+ runs it directly, without a build step or Bun runtime. Commander 14.0.3 and Chrono 2.10.3 are the production dependencies. Root dependency installation keeps the skill scripts within the checkout. `mise.toml` remains unchanged.
+The public entry point is the executable `skills/journal/scripts/journal`. It has no extension and mode 0755. Run it directly, not as `node journal`. A two-line JavaScript launcher with a `#!/usr/bin/env node` shebang imports the typed `cli.ts`, because Node 24 strips types only from `.ts` filenames. Node 24+ runs both without a build step or Bun runtime. Commander 14.0.3 and Chrono 2.10.3 are the production dependencies. Root dependency installation keeps the skill scripts within the checkout. `mise.toml` remains unchanged.
 
 The [usage guide](docs/usage.md) covers invocation, dependency setup, filters, attribution, and directory precedence. The [format reference](docs/format.md) defines version 2 grammar and escapes, version 1 compatibility, full-file parse refusal, and descriptor locking.
 
@@ -30,7 +30,7 @@ bun run test
 
 `check` runs strict TypeScript and Biome with zero warnings. `test` executes the TypeScript source through Node's test runner. Test helpers reject Bun and Node versions below 24.
 
-The corrected suite passed 39 tests under Node 24.22.1 on macOS. The baseline version 1 suite passed 31 tests before edits. Earlier independent copied-source probes installed only Commander and Chrono, then ran the CLI without Bun on PATH. Current CLI tests also use Node alone with isolated HOME and XDG paths.
+The corrected suite passed 39 tests under Node 24.22.1 on macOS. The executable entry point (`JRN-16`) added two tests, for 41 in total. CLI tests now spawn the bare executable, and a copied checkout path with spaces runs with Node alone. The baseline version 1 suite passed 31 tests before edits. Earlier independent copied-source probes installed only Commander and Chrono, then ran the CLI without Bun on PATH. Current CLI tests also use Node alone with isolated HOME and XDG paths.
 
 Tests cover readable stored/displayed prose, both format readers, Unicode and delimiter roundtrips, malformed-file and failed-replacement preservation, retention, and author/date/limit selection. They also cover fixed-reference dates, directory precedence, actual CLI execution, and concurrent independent writers. Transition tests preserve rich legacy values, reject malformed data beyond retention, and race sixteen CLI writers against a 240-entry version 1 journal. CLI subprocesses use temporary HOME, XDG, project, and temporary directories with an explicit environment.
 
@@ -50,6 +50,7 @@ Local Trail project `JRN` owns the work. Subtask descriptions preserve bounded r
 | `JRN-3` | Local dates and pure read selection | `sklqmuyp` |
 | `JRN-4` | Atomic descriptor-locked storage | `pqxrvvqv` |
 | `JRN-5` | Source CLI, skill, and usage documentation | `mnmlvrmx` |
+| `JRN-16` | Extensionless executable launcher and tests | `tzyostsl` |
 
 The original adversarial reviewer approved all four version 1 slices and the complete implementation. The lead independently approved `ztzlkxry` and completed `JRN-1`.
 

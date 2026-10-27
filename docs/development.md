@@ -8,7 +8,7 @@ bun run check
 bun run test
 ```
 
-`check` runs strict TypeScript checking and Biome formatting and lint checks. `test` invokes Node's test runner on the source TypeScript. It refuses Bun or a Node version below 24. There is no compilation step. Use `node --test tests/format.test.ts` to run one file.
+`check` runs strict TypeScript checking and Biome formatting and lint checks. `test` invokes Node's test runner on the source TypeScript. CLI tests spawn the bare `journal` executable, so they also exercise the shebang and the execute bit. It refuses Bun or a Node version below 24. There is no compilation step. Use `node --test tests/format.test.ts` to run one file.
 
 The suite creates temporary projects with isolated HOME, XDG, temporary, and journal directories. CLI children receive a small explicit environment. Store tests inject failures only at native file and subprocess boundaries. Concurrency tests use independent Node processes and the real platform lock utility. One lock timeout test takes 10 seconds.
 
@@ -18,11 +18,14 @@ The lock tests require macOS or Linux with the selected utility. Linux command s
 
 | Module under `skills/journal/scripts/` | Responsibility |
 | --- | --- |
-| `journal.ts` | Commander arguments, directory selection, output and error reporting |
+| `journal` | Executable launcher. It has a Node shebang and imports `cli.ts` |
+| `cli.ts` | Commander arguments, directory selection, output and error reporting |
 | `format.ts` | Entry normalization and complete versioned Markdown encoding and parsing |
 | `dates.ts` | Local timestamps, native ISO date handling, and whole-input Chrono fallback |
 | `selection.ts` | Pure author, day-window, limit, and omission selection |
 | `store.ts` | Read-only loading and locked, bounded, atomic publication |
+
+The launcher has no extension because agents run it as a command. Node strips TypeScript types only from files with a `.ts` name, so the launcher is plain JavaScript and the typed code stays in `cli.ts`. Keep the launcher at two lines and its mode at 0755. TypeScript checks `cli.ts` and the modules it imports.
 
 The data flow is arguments to typed selection or entry content, then journal storage, then output. Storage owns the lock descriptor and temporary file. The format parser refuses incomplete or unknown data before retention can discard old entries. No module detects a harness, infers identity, or imports another project.
 

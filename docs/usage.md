@@ -15,14 +15,16 @@ Run Journal with Node 24 or later on macOS or Linux. Writers require `/usr/bin/l
 2. Read the current project's latest recorded day:
 
    ```sh
-   node /absolute/path/to/agent-journal/skills/journal/scripts/journal.ts read
+   /absolute/path/to/agent-journal/skills/journal/scripts/journal read
    ```
 
 3. Record one development:
 
    ```sh
-   node /absolute/path/to/agent-journal/skills/journal/scripts/journal.ts write --author Alice 'Finished date filters. Details: JRN-3'
+   /absolute/path/to/agent-journal/skills/journal/scripts/journal write --author Alice 'Finished date filters. Details: JRN-3'
    ```
+
+Run `journal` as a command. Do not put `node` before it. Its `#!/usr/bin/env node` line finds Node 24 or later on `PATH`. If a copy loses the execute bit, run `chmod +x skills/journal/scripts/journal`.
 
 Keep the checkout and its root `node_modules` directory together. There is no build step. Point your harness's skill discovery at `skills/journal`. Copying `SKILL.md` alone does not install the script or its dependencies. Do not put the TypeScript source under `node_modules`. Node does not strip types there.
 
@@ -30,7 +32,7 @@ For a shorter command in fish, define a function with the absolute checkout path
 
 ```fish
 function journal
-    node /absolute/path/to/agent-journal/skills/journal/scripts/journal.ts $argv
+    /absolute/path/to/agent-journal/skills/journal/scripts/journal $argv
 end
 ```
 
@@ -44,10 +46,10 @@ The path comes from `--dir`, then `AGENT_JOURNAL_DIR`, then `.agent-journal` und
 journal --dir /path/to/project/notes write 'Found the cause. Details: JRN-4'
 ```
 
-To set the environment for one invocation, use the full Node command:
+To set the environment for one invocation, use the full path:
 
 ```sh
-env AGENT_JOURNAL_DIR=/path/to/project/notes node /absolute/path/to/agent-journal/skills/journal/scripts/journal.ts read
+env AGENT_JOURNAL_DIR=/path/to/project/notes /absolute/path/to/agent-journal/skills/journal/scripts/journal read
 ```
 
 ## Read a selected window

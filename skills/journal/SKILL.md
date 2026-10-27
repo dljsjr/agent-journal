@@ -9,27 +9,27 @@ Read the journal when you enter a fresh context or resume work in a project. Pub
 
 ## Run the CLI
 
-Resolve `scripts/journal.ts` against the directory containing this `SKILL.md`. Use that absolute path with Node 24 or later:
+Resolve `scripts/journal` against the directory containing this `SKILL.md`. Run that absolute path directly. Do not put `node` before it. Node 24 or later must be on `PATH`:
 
 ```sh
-node <absolute-skill-directory>/scripts/journal.ts read
-node <absolute-skill-directory>/scripts/journal.ts write 'Found the cause. Details: docs/parser-notes.md'
+<absolute-skill-directory>/scripts/journal read
+<absolute-skill-directory>/scripts/journal write 'Found the cause. Details: docs/parser-notes.md'
 ```
 
-Keep this skill inside the installed checkout with its root dependencies. If dependencies are missing, use the checkout's [usage guide](../../docs/usage.md). No build step or Bun runtime is required.
+Keep this skill inside the installed checkout with its root dependencies. If dependencies are missing or the file is not executable, use the checkout's [usage guide](../../docs/usage.md). No build step or Bun runtime is required.
 
 The journal directory comes from `--dir`, then `AGENT_JOURNAL_DIR`, then `.agent-journal` under the invocation's working directory. The file is always `journal.md`. If you change working directories, keep related commands on the same absolute journal path:
 
 ```sh
-node <absolute-skill-directory>/scripts/journal.ts --dir /absolute/project/notes read
+<absolute-skill-directory>/scripts/journal --dir /absolute/project/notes read
 ```
 
 ## Read continuation context
 
 ```sh
-node <absolute-skill-directory>/scripts/journal.ts read --author Alice
-node <absolute-skill-directory>/scripts/journal.ts read --since yesterday --limit 100
-node <absolute-skill-directory>/scripts/journal.ts read --date 'last Friday'
+<absolute-skill-directory>/scripts/journal read --author Alice
+<absolute-skill-directory>/scripts/journal read --since yesterday --limit 100
+<absolute-skill-directory>/scripts/journal read --date 'last Friday'
 ```
 
 The default selects the newest recorded day after author filtering, not necessarily today. Reads never consume or change entries. The default limit is 20. If the output reports omitted matches, increase `--limit` to read the remaining entries in that window. A larger limit does not include older days. Use `--since` to include them.
@@ -45,7 +45,7 @@ Write one meaningful development per entry, not one entry per tool call. State t
 A task tracker is optional. When details live elsewhere, reference an existing file, note, or other record. Use task or issue identifiers when the project already has them.
 
 ```sh
-node <absolute-skill-directory>/scripts/journal.ts write --author Alice 'Fixed the failed replacement path. Tests pass. Details: docs/storage-notes.md'
+<absolute-skill-directory>/scripts/journal write --author Alice 'Fixed the failed replacement path. Tests pass. Details: docs/storage-notes.md'
 ```
 
 Keep content within 500 Unicode code points after normalization. The CLI replaces line breaks with spaces and trims surrounding whitespace. Multiword entries require one quoted argument. If the entry is too long, move details to a project note and shorten the entry.
