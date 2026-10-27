@@ -65,6 +65,6 @@ The Pi package manifest (`JRN-17`) used the same workflow. The reviewer approved
 
 ## Scope boundaries
 
-There is no harness detection, inferred identity, Sandpiper environment integration, legacy-note migration or deletion, edit/delete/cleanup command, installer, publishing, or CI/release pipeline. No changes to another project's code or legacy standup files belong to this work.
+There is no harness detection, inferred identity, Sandpiper environment integration, legacy-note migration or deletion, edit/delete/cleanup command, installer, publishing, or CI/release pipeline. No changes to another project's code or saved historical notes belong to this work.
 
 Sandpiper tasks TOOLS-47 and TOOLS-50 remain historical design/review records. The selected lock mechanism is final for this scope. Do not reopen native-addon, FFI, or database research.

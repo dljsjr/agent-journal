@@ -203,7 +203,7 @@ The skill teaches the CLI workflow and does not ask agents to construct metadata
 
 ## Legacy boundary and current state
 
-Leave the existing `.sandpiper/standup.md` unchanged. No migration or deletion of its contents is authorized by this design.
+Preserve saved historical notes unchanged. No migration or deletion of their contents is authorized by this design.
 
 The standalone colocated jj/Git repository contains the user-provided `mise.toml`, the source CLI, the skill, behavioral tests, and usage documentation. Sandpiper environment integration remains outside this implementation. Sandpiper tasks TOOLS-47 and TOOLS-50 track the earlier review and design checkpoint.
 
