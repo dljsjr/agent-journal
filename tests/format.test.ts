@@ -71,6 +71,29 @@ test("refuses all unknown or incomplete data instead of returning a recognized s
   assert.throws(() => parseJournal(valid.repeat(201)), /journal/i);
 });
 
+test("round trips a deterministic Unicode and delimiter corpus without changing entry order", () => {
+  const fragments = [
+    "<",
+    ">",
+    "-",
+    "#",
+    "`",
+    '"',
+    "\\",
+    "\t",
+    "\u0000",
+    "😀",
+    "é",
+    "\ud800",
+  ];
+  const entries: Entry[] = Array.from({ length: 240 }, (_, index) => ({
+    timestamp: `2026-10-${index % 2 ? "26" : "27"}T12:00:00.000+00:00`,
+    content: `entry ${index}: ${fragments.map((_, part) => fragments[(index + part) % fragments.length]).join("")} end`,
+    author: `${index}\n\r\u2028\u2029${fragments.join("")}`,
+  }));
+  assert.deepEqual(parseJournal(serializeJournal(entries)), entries);
+});
+
 test("bounds content by Unicode code points after normalization", () => {
   assert.equal(normalizeContent(`  ${"😀".repeat(500)}\n `), "😀".repeat(500));
   for (const input of ["", " \r\n\t", "x".repeat(501), "😀".repeat(501)]) {
