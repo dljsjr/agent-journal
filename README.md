@@ -14,6 +14,6 @@ Journal retains 200 entries, with at most 500 content code points each. Reads se
 
 - [Usage and dependency setup](docs/usage.md)
 - [Journal skill](skills/journal/SKILL.md)
-- [Approved behavior](docs/spec.md) and [file format](docs/format.md)
+- [Approved behavior](docs/spec.md), [file format](docs/format.md), and [actual generated sample](docs/sample-journal.md)
 - [Development](docs/development.md)
 - [Current implementation handoff and verification limits](HANDOFF.md)

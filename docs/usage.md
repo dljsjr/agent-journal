@@ -62,6 +62,8 @@ Without a date flag, Journal first filters authors, then selects the newest matc
 
 Dates use the machine's timezone. Date-only ISO input uses `YYYY-MM-DD`. JavaScript calendar normalization applies, so `2026-02-30` selects March 2. Relative examples include `yesterday`, `last Monday`, `last Friday`, `2 days ago`, `2 weeks ago`, `last week`, `-3 days`, and `today - 2 days`. Quote phrases with spaces. For negative values, use `--date='-3 days'`. Journal rejects partial matches and date ranges. It does not promise GNU date compatibility.
 
+Reads display ordinary Markdown prose with a time prefix and optional author label. The [generated sample](sample-journal.md) shows the exact output. Existing version 1 files remain unchanged on reads. A normal write converts them to version 2 after a complete successful parse.
+
 Reads return at most 20 entries by default. `--limit` accepts a positive safe integer. The output reports omitted matches within the selected window. A missing journal or an empty result prints `No matching journal entries.` Reads do not consume entries, prune old entries, or create directories.
 
 ## Keep entries focused

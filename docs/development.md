@@ -26,4 +26,4 @@ The lock tests require macOS or Linux with the selected utility. Linux command s
 
 The data flow is arguments to typed selection or entry content, then journal storage, then output. Storage owns the lock descriptor and temporary file. The format parser refuses incomplete or unknown data before retention can discard old entries. No module detects a harness, infers identity, or imports another project.
 
-The [specification](spec.md) defines behavior. The [format reference](format.md) defines serialized version 1 and locking mechanics. Local Trail tasks under project `JRN` record reviewed change IDs and verification evidence.
+The [specification](spec.md) defines behavior. The [format reference](format.md) defines serialized version 2, read-only version 1 compatibility, and locking mechanics. Local Trail tasks under project `JRN` record reviewed change IDs and verification evidence.

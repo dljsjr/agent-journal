@@ -1,8 +1,8 @@
-# Agent Journal v1 specification
+# Agent Journal specification
 
-Status: approved v1 contract, implemented. The current verification state is in [HANDOFF.md](../HANDOFF.md).
+Status: approved behavior with the readable Markdown correction. The current verification state is in [HANDOFF.md](../HANDOFF.md).
 
-This is the approved v1 contract for the standalone `journal` CLI and skill. The earlier design research is recorded in Sandpiper tasks TOOLS-47 and TOOLS-50.
+This is the approved contract for the standalone `journal` CLI and skill. The earlier design research is recorded in Sandpiper tasks TOOLS-47 and TOOLS-50.
 
 ## Purpose and scope
 
@@ -77,7 +77,9 @@ The journal retains at most 200 entries across all dates and authors. If a write
 
 Retention is count-based, not age-based. Idle time does not expire entries. This is an explicitly lossy recent-activity buffer, with generous enough retention for the intended personal workflow.
 
-The [format reference](format.md) defines the selected versioned Markdown layout. It round-trips normalized content and author labels without confusing content with entry or header boundaries. An unrecognized or partially parsed file must not be silently rewritten as a smaller recognized subset.
+The [format reference](format.md) defines the versioned Markdown layout. Version 2 uses a small fixed time and optional author prefix, followed by ordinary prose. It does not serialize JSON objects inside bullets. The [generated sample](sample-journal.md) shows actual CLI output.
+
+The format round-trips normalized content and author labels without confusing content with entry or header boundaries. Existing generated version 1 journals remain readable without mutation. A normal locked atomic write converts a fully parsed version 1 file to version 2 and preserves all retained entry values. An unrecognized or partially parsed file must not be silently rewritten as a smaller recognized subset.
 
 ## Time and date handling
 

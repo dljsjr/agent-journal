@@ -46,6 +46,8 @@ Keep content within 500 Unicode code points after normalization. The CLI replace
 
 Use `--author` only for explicit attribution. Matching is exact and case-sensitive. Do not infer a label from a login, process, session, or harness. Omit the flag when attribution is unnecessary.
 
-Let the CLI generate timestamps, headers, and encoded metadata. Do not write or reformat `journal.md` directly. Cooperating CLI writers use a kernel lock and atomic replacement. The journal retains only the newest 200 published entries. It is not a permanent record.
+Journal stores and displays ordinary Markdown prose after a small time and optional author prefix. See the [actual generated sample](../../docs/sample-journal.md) and [format reference](../../docs/format.md).
+
+Let the CLI generate timestamps, headers, and escapes. Do not write or reformat `journal.md` directly. Reads leave older version 1 files unchanged. A normal write converts a fully parsed version 1 file to the readable version 2 format. Cooperating CLI writers use a kernel lock and atomic replacement. The journal retains only the newest 200 published entries. It is not a permanent record.
 
 If a write fails, keep the existing journal intact. Report the error instead of bypassing the lock or replacing an unrecognized file. Do not delete or replace `.journal.lock` while writers can run.
