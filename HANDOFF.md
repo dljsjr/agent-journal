@@ -42,7 +42,7 @@ Linux locking support uses `/usr/bin/flock`, but this implementation session did
 
 ## Review record
 
-Local Trail project `JRN` owns the work. Subtask descriptions preserve bounded review evidence and stable change IDs:
+Local Trail project `JRN` owns the work. Task and subtask descriptions preserve bounded review evidence and stable change IDs:
 
 | Task | Slice | Reviewed change |
 | --- | --- | --- |
@@ -50,13 +50,15 @@ Local Trail project `JRN` owns the work. Subtask descriptions preserve bounded r
 | `JRN-3` | Local dates and pure read selection | `sklqmuyp` |
 | `JRN-4` | Atomic descriptor-locked storage | `pqxrvvqv` |
 | `JRN-5` | Source CLI, skill, and usage documentation | `mnmlvrmx` |
-| `JRN-16` | Extensionless executable launcher and tests | `tzyostsl` |
+| `JRN-16` | Extensionless executable launcher, tests, and documentation | `tzyostsl`, `uktxtmlu`, `xzlvmvmm` |
 
 The original adversarial reviewer approved all four version 1 slices and the complete implementation. The lead independently approved `ztzlkxry` and completed `JRN-1`.
 
 The readable Markdown correction used the same continuous developer/reviewer workflow. Bounded evidence lives in the descriptions for `JRN-7` (codec, `vuuxoxvs`), `JRN-8` (safe transition, `yxvrrvry`), and `JRN-9` (grammar and generated sample, `mzntqzqk`). The reviewer independently approved each slice and the complete range `lztrrtxw..mzntqzqk` with no actionable findings. The pair reviewed actual file and CLI output, not only parsed values. The lead independently approved `mzntqzqk` with no actionable findings and completed all four correction tasks under delegated user sign-off.
 
 Only `format.ts` changes production behavior. Dates, selection, storage, locking, and CLI arguments remain unchanged.
+
+The executable entry point (`JRN-16`) used the same workflow. The reviewer independently approved the range `utywlqwm..xzlvmvmm` with no remaining findings. The lead independently approved `xzlvmvmm` after a frozen install, strict checks, the 41-test Node 24.22.1 suite, and a copied production-only probe. The probe ran the bare executable from an unrelated working directory with a path containing spaces and Node alone on `PATH`. The lead completed `JRN-16` as COMPLETE/DONE under delegated user sign-off. It changes only the entry point, tests, and documentation. Round 1 evaluation artifacts, grades, and the report are unchanged. Tests ran on macOS only.
 
 ## Scope boundaries
 
