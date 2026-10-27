@@ -99,8 +99,8 @@ test("validates the complete file before retention and preserves malformed files
   for (const corrupt of [
     "",
     `${valid}unknown suffix\n`,
-    valid.replace("v1", "v99"),
-    valid.replace('"entry 239"', '"entry 239","unknown":1'),
+    valid.replace("v2", "v99"),
+    valid.replace("entry 239", String.raw`entry 239\q`),
   ]) {
     fs.writeFileSync(file, corrupt);
     const before = fs.statSync(file);
