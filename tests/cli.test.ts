@@ -77,6 +77,65 @@ test("CLI read flags select author/date windows, enforce limits, and report exac
   assert.equal(fs.readFileSync(file, "utf8"), source);
 });
 
+test("CLI stores and displays ordinary prose with only a small metadata prefix", (t) => {
+  const box = sandbox(t);
+  for (const args of [
+    ["write", "Node-only installation works."],
+    [
+      "write",
+      "--author",
+      "NodeOnly",
+      'Finished "date filters". Details: JRN-3',
+    ],
+  ]) {
+    const result = run(box, args);
+    assert.equal(result.status, 0, result.stderr);
+  }
+  const text = fs.readFileSync(join(box.directory, "journal.md"), "utf8");
+  assert.match(text, /^# Journal v2\n\n## \d{4}-\d{2}-\d{2}\n/u);
+  assert.match(
+    text,
+    /^- \[\d{2}:\d{2}:\d{2}\.\d{3}\+00:00\] \[NodeOnly\] — Finished "date filters"\. Details: JRN-3$/mu,
+  );
+  assert.match(
+    text,
+    /^- \[\d{2}:\d{2}:\d{2}\.\d{3}\+00:00\] — Node-only installation works\.$/mu,
+  );
+  const read = run(box, ["read", "--since", "2000-01-01"]);
+  assert.equal(read.status, 0, read.stderr);
+  assert.equal(read.stdout, text);
+});
+
+test("CLI displays v1 as readable v2 without rewriting and converts only on a normal write", (t) => {
+  const box = sandbox(t);
+  fs.mkdirSync(box.directory);
+  const file = join(box.directory, "journal.md");
+  const legacy = fs.readFileSync(
+    new URL("./fixtures/journal-v1.md", import.meta.url),
+  );
+  fs.writeFileSync(file, legacy);
+  const before = fs.statSync(file);
+  const retained = parseJournal(legacy.toString("utf8"));
+  const read = run(box, ["read", "--since", "2026-10-01"]);
+  assert.equal(read.status, 0, read.stderr);
+  assert.match(read.stdout, /^# Journal v2\n/u);
+  assert.deepEqual(parseJournal(read.stdout), retained);
+  assert.deepEqual(fs.readFileSync(file), legacy);
+  assert.equal(fs.statSync(file).mtimeMs, before.mtimeMs);
+  assert.deepEqual(fs.readdirSync(box.directory), ["journal.md"]);
+  const emptyAuthor = run(box, ["read", "--author", ""]);
+  assert.equal(emptyAuthor.status, 0, emptyAuthor.stderr);
+  assert.deepEqual(parseJournal(emptyAuthor.stdout), [retained[1]]);
+  const write = run(box, ["write", "New ordinary prose."]);
+  assert.equal(write.status, 0, write.stderr);
+  const updated = fs.readFileSync(file, "utf8");
+  assert.match(updated, /^# Journal v2\n/u);
+  const entries = parseJournal(updated);
+  assert.equal(entries[0]?.content, "New ordinary prose.");
+  assert.equal(Object.hasOwn(entries[0] ?? {}, "author"), false);
+  assert.deepEqual(entries.slice(1), retained);
+});
+
 test("directory precedence is explicit flag, environment, then invocation CWD", (t) => {
   const box = sandbox(t);
   const environment = join(box.root, "environment notes");
@@ -170,18 +229,48 @@ test("CLI refuses malformed journal files on reads and writes without changing b
   const box = sandbox(t);
   fs.mkdirSync(box.directory);
   const file = join(box.directory, "journal.md");
-  const corrupt = "# Journal v1\n\n## 2026-10-27\n- unknown metadata\n";
-  fs.writeFileSync(file, corrupt);
-  for (const args of [["read"], ["write", "new"]]) {
-    const result = run(box, args);
-    assert.notEqual(result.status, 0);
-    assert.ok(result.stderr.includes(file), result.stderr);
-    assert.equal(fs.readFileSync(file, "utf8"), corrupt);
+  const legacy = fs.readFileSync(
+    new URL("./fixtures/journal-v1.md", import.meta.url),
+    "utf8",
+  );
+  for (const corrupt of [
+    "# Journal v1\n\n## 2026-10-27\n- unknown metadata\n",
+    legacy.replace('"author":""', '"author":"","unknown":1'),
+    `${legacy}unknown suffix\n`,
+    serializeJournal(parseJournal(legacy)).replace(
+      "ordinary prose.",
+      String.raw`ordinary prose.\q`,
+    ),
+  ]) {
+    fs.writeFileSync(file, corrupt);
+    const before = fs.statSync(file);
+    for (const args of [["read"], ["write", "new"]]) {
+      const result = run(box, args);
+      assert.notEqual(result.status, 0);
+      assert.ok(result.stderr.includes(file), result.stderr);
+      assert.equal(fs.readFileSync(file, "utf8"), corrupt);
+      assert.equal(fs.statSync(file).mtimeMs, before.mtimeMs);
+    }
   }
 });
 
-test("independent source CLI processes publish unique entries concurrently", async (t) => {
+test("independent source CLI processes convert v1 safely and publish unique entries concurrently", async (t) => {
   const box = sandbox(t);
+  fs.mkdirSync(box.directory);
+  const legacy =
+    fs.readFileSync(
+      new URL("./fixtures/journal-v1.md", import.meta.url),
+      "utf8",
+    ) +
+    "\n## 2026-10-25\n" +
+    Array.from(
+      { length: 236 },
+      (_, index) =>
+        `- \`2026-10-25T12:00:00.000+00:00\` {"content":"seed ${index}"}\n`,
+    ).join("");
+  const original = parseJournal(legacy);
+  const file = join(box.directory, "journal.md");
+  fs.writeFileSync(file, legacy);
   await Promise.all(
     Array.from(
       { length: 16 },
@@ -203,11 +292,12 @@ test("independent source CLI processes publish unique entries concurrently", asy
         }),
     ),
   );
-  const entries = parseJournal(
-    fs.readFileSync(join(box.directory, "journal.md"), "utf8"),
-  );
-  assert.equal(entries.length, 16);
-  assert.equal(new Set(entries.map((entry) => entry.content)).size, 16);
+  const updated = fs.readFileSync(file, "utf8");
+  assert.match(updated, /^# Journal v2\n/u);
+  const entries = parseJournal(updated);
+  assert.equal(entries.length, 200);
+  assert.equal(new Set(entries.map((entry) => entry.content)).size, 200);
+  assert.deepEqual(entries.slice(16), original.slice(0, 184));
   for (let index = 0; index < 16; index++)
     assert.ok(
       entries.some(
