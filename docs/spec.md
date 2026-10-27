@@ -1,6 +1,6 @@
 # Agent Journal v1 specification
 
-Status: approved design, not implemented. The current session handoff is in [HANDOFF.md](../HANDOFF.md).
+Status: approved v1 contract, implemented. The current verification state is in [HANDOFF.md](../HANDOFF.md).
 
 This is the approved v1 contract for the standalone `journal` CLI and skill. The earlier design research is recorded in Sandpiper tasks TOOLS-47 and TOOLS-50.
 
@@ -20,7 +20,7 @@ The implementation uses Node-compatible TypeScript. Bun is preferred for develop
 
 The distribution goal is a source script under the skill's `scripts/` directory, without a build step. Commander and Chrono are ordinary JavaScript dependencies. No native npm addon, handwritten FFI binding, or database is selected.
 
-Node 24+ is the approved baseline. The user created the standalone repository with `mise.toml` selecting `node = "lts"`, currently Node 24.22.1. A source `.ts` script ran successfully under that Node version during feasibility tests. The final dependency-installation layout is not selected yet. Do not assume that publishing to npm, adding a release pipeline, or supporting every installation layout is part of the MVP.
+Node 24+ is the approved baseline. The user created the standalone repository with `mise.toml` selecting `node = "lts"`, currently Node 24.22.1. A source `.ts` script ran successfully under that Node version during feasibility tests. The [usage guide](usage.md) defines the checkout-based dependency layout. Do not assume that publishing to npm, adding a release pipeline, or supporting every installation layout is part of the MVP.
 
 ## Journal location
 
@@ -77,7 +77,7 @@ The journal retains at most 200 entries across all dates and authors. If a write
 
 Retention is count-based, not age-based. Idle time does not expire entries. This is an explicitly lossy recent-activity buffer, with generous enough retention for the intended personal workflow.
 
-The exact serialized metadata layout is not selected yet. It must round-trip normalized content and author labels without confusing content with entry or header boundaries. An unrecognized or partially parsed file must not be silently rewritten as a smaller recognized subset.
+The [format reference](format.md) defines the selected versioned Markdown layout. It round-trips normalized content and author labels without confusing content with entry or header boundaries. An unrecognized or partially parsed file must not be silently rewritten as a smaller recognized subset.
 
 ## Time and date handling
 
@@ -126,7 +126,7 @@ Use `parse()`, not `parseDate()`, because the CLI needs match boundaries and ran
 
 Chrono runs all configured parsers and then applies refiners. Adding an ISO parser first does not short-circuit casual parsing. The user approved an ordinary ISO fast path plus Chrono fallback instead of custom Chrono parsers/refiners.
 
-Feasibility tests accepted `yesterday`, `last Monday`, `last Friday`, `2 days ago`, `2 weeks ago`, `last week`, `-3 days`, and `today - 2 days`. Exact supported examples still need repository regression tests. Use a fixed reference time in those tests.
+Feasibility tests accepted `yesterday`, `last Monday`, `last Friday`, `2 days ago`, `2 weeks ago`, `last week`, `-3 days`, and `today - 2 days`. Repository regression tests cover these examples with a fixed reference time.
 
 ## Read command
 
@@ -203,8 +203,8 @@ The skill teaches the CLI workflow and does not ask agents to construct metadata
 
 Leave the existing `.sandpiper/standup.md` unchanged. No migration or deletion of its contents is authorized by this design.
 
-The user created the standalone repository as a colocated jj/Git repository. It contains the user-provided `mise.toml` and the design/handoff documents. No journal CLI, skill implementation, or Sandpiper environment integration exists yet. Sandpiper tasks TOOLS-47 and TOOLS-50 track the review and design checkpoint.
+The standalone colocated jj/Git repository contains the user-provided `mise.toml`, the source CLI, the skill, behavioral tests, and usage documentation. Sandpiper environment integration remains outside this implementation. Sandpiper tasks TOOLS-47 and TOOLS-50 track the earlier review and design checkpoint.
 
 Removal of the old bundled CLI/skill, changes to its documentation and build wiring, and the exact transition sequence still need implementation scope. Do not infer authorization to delete them from approval of individual journal design choices.
 
-No further product decisions were identified as blocking v1. The remaining mechanical details include the exact Markdown metadata layout, empty/missing-file output, author matching details, and runtime installation layout. Prefer simple defaults rather than expanding the feature set. Further product decisions require user input only when they present a meaningful tradeoff.
+The format reference and usage guide record the selected mechanical defaults for metadata, empty/missing-file output, exact author matching, and runtime layout. Further product decisions require user input only when they present a meaningful tradeoff.

@@ -1,90 +1,52 @@
-# Journal v1 session handoff
+# Journal v1 implementation handoff
 
 Updated: 2026-10-27.
 
-The design discussion is complete enough to implement v1. Read [docs/spec.md](docs/spec.md) before making changes. It contains the approved contract, not an exploratory proposal.
+The standalone CLI and skill implement the [approved v1 contract](docs/spec.md). The implementation awaits final lead review under local Trail task `JRN-1`. The user delegated final task completion to the lead. The developer/reviewer pair does not finalize that top-level task.
 
-## What we are doing
+## Current layout
 
-Replace the old standup workflow with a small bounded journal. A fresh agent context must quickly find where to resume, without loading a huge history. Independent top-level agents must be able to publish concurrently in the same directory.
+The source entry point is `skills/journal/scripts/journal.ts`. Node 24+ runs it directly, without a build step or Bun runtime. Commander 14.0.3 and Chrono 2.10.3 are the production dependencies. Root dependency installation keeps the skill scripts within the checkout. `mise.toml` remains unchanged.
 
-The solution is a newest-first Markdown activity journal, not an identity layer, a complete memory system, or a parent/subagent coordination mechanism.
+The [usage guide](docs/usage.md) covers invocation, dependency setup, filters, attribution, and directory precedence. The [format reference](docs/format.md) defines version 1, full-file parse refusal, and descriptor locking. The [development guide](docs/development.md) maps modules and verification commands.
 
-The repository is `agent-journal`. Both the CLI and skill are `journal`. Their behavior is harness agnostic.
+Mechanical defaults are Unicode code point counting, exact case-sensitive author matching, a 10-second lock wait, and `No matching journal entries.` for an empty read. Empty author labels remain distinct from absent attribution. An explicitly empty directory path means the invocation's current directory.
 
-## Repository state
+Publication order remains immutable. Adjacent entries share a day header. Clock or timezone rollback can repeat a header. Default reads select the maximum recorded calendar day after author filtering, then preserve publication order within that selection.
 
-The user initialized a colocated jj/Git repository and added `mise.toml` with `node = "lts"`, currently 24.22.1. That exact file was preserved and committed as jj change `qtorzlls`.
+## Verification
 
-The repository otherwise contains only this handoff, the README, and the approved specification. There is no package manifest, CLI implementation, skill implementation, test suite, or project-local task board yet. Use jj for version control.
+Run these commands from the checkout:
 
-The earlier research and decision record are tracked in the Sandpiper repository as TOOLS-47 and TOOLS-50. Those are review/design records, not a backlog of authorized extra features.
+```sh
+bun install --frozen-lockfile
+bun run check
+bun run test
+```
 
-## Approved contract at a glance
+`check` runs strict TypeScript and Biome with zero warnings. `test` executes the TypeScript source through Node's test runner. Test helpers reject Bun and Node versions below 24.
 
-- Node-compatible TypeScript, Node 24+, no Bun API or Bun shebang requirement. A source script under the skill's `scripts/` directory is the distribution goal, without a build step.
-- One required positional entry, quoted for multiword content. Replace line breaks with spaces, trim surrounding whitespace, then reject empty content or more than 500 content characters. Retain 200 entries, newest first, dropping the oldest on write and deleting empty day headers.
-- Optional explicit `--author` attribution and author filtering. Default read selects the newest recorded day after author filtering, not necessarily today. Return at most 20 entries unless a positive `--limit` overrides it. Report omitted matching entries. Never consume or mutate on read.
-- Mutually exclusive `--date` and inclusive `--since`. Explicit date selection overrides the latest-day default. Support ISO dates and common English relative dates. Use the machine's configured timezone for calendar days and include UTC offsets in generated timestamps.
-- Directory precedence is `--dir`, then `AGENT_JOURNAL_DIR`, then `.agent-journal/` under CWD. Filename is fixed as `journal.md`. The earlier `--file` proposal was replaced, not retained as an additional setting.
+Tests cover full serialization roundtrips, malformed-file and failed-replacement preservation, retention, author/date/limit selection, fixed-reference date handling, directory precedence, actual CLI execution, and concurrent independent writers. CLI subprocesses use temporary HOME, XDG, project, and temporary directories with an explicit environment.
 
-## Date parsing decisions
+Actual macOS tests exercise the persistent descriptor lock after the utility exits, lock release, a bounded acquisition timeout, concurrent publication, and the retention ceiling. Narrow native-API failure injection covers missing utilities and rename failure. The reviewer also tested partial temporary writes, slow replacement, and simultaneous reads.
 
-Use an ISO-format fast path with native date handling, then Chrono for other expressions. Do not put unrestricted `Date.parse()` in front of everything.
+Linux locking support uses `/usr/bin/flock`, but this implementation session did not execute Linux tests. No authorized local Linux runtime was available. Do not report Linux execution as verified. Guarantees cover cooperating writers on local filesystems, not network filesystems, manual edits, or power-loss durability.
 
-The user explicitly declined additional calendar validation. JavaScript normalization of a date such as February 30 into March is acceptable. Do not reopen leap-year or month-length validation as a required feature.
+## Review record
 
-Preserve local-calendar behavior for date-only ISO input. Blindly passing `YYYY-MM-DD` through `Date.parse()` interprets it as UTC midnight and can shift the local day backward.
+Local Trail project `JRN` owns the work. Subtask descriptions preserve bounded review evidence and stable change IDs:
 
-The user offered the regex-first `parseYaamsTimestamp()` implementation in `pi-yaams` as a reference. It validates full timestamps with mandatory offsets and normalizes to UTC, so it is not a drop-in date-only parser.
+| Task | Slice | Reviewed change |
+| --- | --- | --- |
+| `JRN-2` | Versioned Markdown codec and Node development setup | `nosooour` |
+| `JRN-3` | Local dates and pure read selection | `sklqmuyp` |
+| `JRN-4` | Atomic descriptor-locked storage | `pqxrvvqv` |
+| `JRN-5` | Source CLI, skill, and usage documentation | Recorded in the task after review |
 
-Chrono 2.10.3 was tested under Node, using its English entry point. Its documented `strict` configuration excludes ordinary relative phrases, so that is not the whole CLI solution.
+The reviewer approved the first three slices without actionable findings. Final CLI/skill review and lead sign-off are recorded through Trail. The pair prioritized readable cohesive modules alongside behavioral correctness.
 
-For the Chrono branch, require exactly one result, starting at index zero, with matched text equal to the trimmed argument and no range endpoint. The `end` field can be null or undefined. Use `parse()`, not `parseDate()`, to inspect those properties.
+## Scope boundaries
 
-Whole-input matching prevents extraction from surrounding junk, but does not prove every fuzzy interpretation correct. Cover the promised phrases with fixed-reference tests. Chrono runs all configured parsers before refiners, so a custom ISO parser at the front does not implement short-circuit fallback. The user approved separate dispatch instead.
+There is no harness detection, inferred identity, Sandpiper environment integration, legacy-note migration or deletion, edit/delete/cleanup command, installer, publishing, or CI/release pipeline. No changes to another project's code or legacy standup files belong to this work.
 
-## The locking solution is already selected
-
-Do not restart the native-addon/FFI/database investigation. The user chose shelling out to system utilities from ordinary Node APIs:
-
-- `/usr/bin/lockf` on macOS.
-- `/usr/bin/flock` on Linux. The user confirmed it exists on the Linux remotes in regular use.
-
-The useful detail is file-descriptor inheritance. Node opens a persistent sidecar lock file and passes it as child descriptor 3 through `spawnSync`'s `stdio` array. The utility locks that descriptor and exits. Node's retained descriptor keeps the same kernel lock alive.
-
-The verified macOS command shape is `lockf -s -t <seconds> 3`. Linux uses `flock -x -w <seconds> 3`. The timeout value is an implementation choice, not an approved new CLI flag.
-
-The lock covers the entire journal read, complete parse, modification, trimming, and atomic replacement. Close the Node descriptor in `finally`. Use a unique temporary file in the journal directory.
-
-Never unlink or replace the sidecar lock file. Its existence is not an ownership marker. macOS descriptor mode implies keeping it. Path-and-command mode needs `-k`.
-
-This was verified on macOS: another process remained excluded after `lockf` exited, then acquired the lock after Node closed its descriptor. Linux execution has not been tested. Missing utilities must fail clearly, not fall back to a weaker lock-directory or stale-timeout protocol.
-
-The scope is cooperating writers on local filesystems. Direct manual edits bypass advisory locks. Network-filesystem guarantees are not part of the agreed MVP.
-
-## Skill and host integration
-
-The skill should encourage short entries as meaningful developments occur, rather than one huge report at session end. Each entry discusses one thing. Detailed reasoning belongs in a task or document referenced by the entry. Routine tool calls do not each need an entry.
-
-Metadata is generated by the CLI from flags and the clock. Agents do not hand-author it.
-
-Sandpiper's separate integration supplies an absolute project `.sandpiper` directory through `AGENT_JOURNAL_DIR` before tool/provider children start. It preserves an existing user value. The standalone CLI and skill must not detect Sandpiper or import its code.
-
-## Boundaries for the next session
-
-No further product decisions were identified as blocking v1. The exact Markdown metadata format, character-counting implementation, author matching details, empty-file messages, and dependency installation layout can use simple documented defaults. Ask only if a real tradeoff appears.
-
-Do not add edit/delete/cleanup commands, ownership recovery, process liveness, automatic retention by age, broad query languages, managed installers, publication machinery, or memory-system integration.
-
-Leave the legacy `.sandpiper/standup.md` in the Sandpiper repository unchanged. It was deliberately not used for this handoff. No old-note migration or deletion is authorized.
-
-The precise decommissioning of the old bundled CLI/skill and build wiring was not planned. Keep that separate from implementing the standalone tool and the already-approved environment-default integration.
-
-No implementation was started during this session. Start from the approved contract and the user's next instruction, not from earlier speculative alternatives in the transcript.
-
-## Verification already performed
-
-The Sandpiper review and specification passed `bun check`, with zero warnings, before handoff. There is no application verification gate in this new repository yet.
-
-Feasibility probes verified native Node TypeScript execution, macOS descriptor-lock retention, and Chrono's representative ISO/relative phrases. The actual journal still needs behavioral tests, especially concurrent writes, parser round-tripping, retention, filtering, and failure preservation. Run runtime-sensitive tests under Node even when Bun runs development commands.
+Sandpiper tasks TOOLS-47 and TOOLS-50 remain historical design/review records. The selected lock mechanism is final for this scope. Do not reopen native-addon, FFI, or database research.

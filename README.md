@@ -1,9 +1,19 @@
 # Agent Journal
 
-A small, bounded Markdown journal for agent continuity, with concurrent publication by independent agents.
+A bounded Markdown activity journal for agent continuity. Independent agents can publish concurrently in the same directory. The CLI and skill are both named `journal` and contain no harness-specific behavior.
 
-The CLI and skill are both named `journal`. They are harness agnostic.
+```sh
+bun install --frozen-lockfile
+node skills/journal/scripts/journal.ts write 'Finished date filters. Details: JRN-3'
+node skills/journal/scripts/journal.ts read
+```
 
-The design is approved, but implementation has not started. Read [HANDOFF.md](HANDOFF.md) for current state and [docs/spec.md](docs/spec.md) for the v1 contract.
+Node 24+ runs the TypeScript source directly. Bun manages development dependencies but is not a runtime requirement. `mise.toml` preserves the Node LTS selection. Writers use `/usr/bin/lockf` on macOS or `/usr/bin/flock` on Linux.
 
-Node 24+ is the runtime baseline. `mise.toml` selects Node LTS, currently 24.22.1. Bun is a development preference, not a runtime requirement. The distribution goal is a source TypeScript script with no build step.
+Journal retains 200 entries, with at most 500 content code points each. Reads select the latest matching recorded day by default and return at most 20 entries. Author, date, and inclusive-since filters narrow the result.
+
+- [Usage and dependency setup](docs/usage.md)
+- [Journal skill](skills/journal/SKILL.md)
+- [Approved behavior](docs/spec.md) and [file format](docs/format.md)
+- [Development](docs/development.md)
+- [Current implementation handoff and verification limits](HANDOFF.md)
