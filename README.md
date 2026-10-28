@@ -12,10 +12,16 @@ skills/journal/scripts/journal read
 
 To use the skill in Pi, run `pi install /absolute/path/to/agent-journal` after the dependency install. See [the install steps](docs/usage.md#install-as-a-pi-package).
 
+To use the skill in Claude Code, run `claude plugin marketplace add dljsjr/agent-journal`, then `claude plugin install agent-journal@agent-journal`. See [the install steps](docs/usage.md#install-as-a-claude-code-plugin).
+
 Journal retains 200 entries, with at most 500 content code points each. Reads select the latest matching recorded day by default and return at most 20 entries. Author, date, and inclusive-since filters narrow the result.
 
-- [Usage, dependency setup, and Pi package install](docs/usage.md)
+- [Usage, dependency setup, and Pi and Claude Code installs](docs/usage.md)
 - [Journal skill](skills/journal/SKILL.md)
 - [Approved behavior](docs/spec.md), [file format](docs/format.md), and [actual generated sample](docs/sample-journal.md)
 - [Development](docs/development.md)
 - [Current implementation handoff and verification limits](HANDOFF.md)
+
+## License
+
+[MIT](LICENSE)

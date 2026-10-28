@@ -28,6 +28,19 @@ Run `journal` as a command. Do not put `node` before it. Its `#!/usr/bin/env nod
 
 Keep the checkout and its root `node_modules` directory together. There is no build step. Point your harness's skill discovery at `skills/journal`. Copying `SKILL.md` alone does not install the script or its dependencies. Do not put the TypeScript source under `node_modules`. Node does not strip types there.
 
+## Install as a Claude Code plugin
+
+The repository is also a Claude Code plugin and a one-plugin marketplace. Install it from GitHub:
+
+```sh
+claude plugin marketplace add dljsjr/agent-journal
+claude plugin install agent-journal@agent-journal
+```
+
+Claude Code copies the plugin into its plugin cache and installs the dependencies pinned in `bun.lock`. It finds the skill under `skills/journal`. Node 24 or later must be on `PATH`.
+
+To install from a local checkout instead, install dependencies in the checkout first and pass its absolute path to `claude plugin marketplace add`. Claude Code does not install dependencies for a local marketplace.
+
 ## Install as a Pi package
 
 The root `package.json` declares `skills/journal` as the package's only Pi resource. Install dependencies in the checkout first. Pi does not install dependencies for a local path:

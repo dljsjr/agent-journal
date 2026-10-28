@@ -1,0 +1,14 @@
+{
+  "name": "agent-journal",
+  "owner": {
+    "name": "Doug Stephen"
+  },
+  "description": "The Journal skill for agent continuity.",
+  "plugins": [
+    {
+      "name": "agent-journal",
+      "source": "./",
+      "description": "A bounded Markdown activity journal for agent continuity."
+    }
+  ]
+}

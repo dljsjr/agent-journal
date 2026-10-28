@@ -1,0 +1,10 @@
+{
+  "name": "agent-journal",
+  "description": "A bounded Markdown activity journal for agent continuity.",
+  "author": {
+    "name": "Doug Stephen"
+  },
+  "homepage": "https://github.com/dljsjr/agent-journal",
+  "repository": "https://github.com/dljsjr/agent-journal",
+  "license": "MIT"
+}
